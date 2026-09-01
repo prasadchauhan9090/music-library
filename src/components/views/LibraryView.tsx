@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { Song, SortField, SortDirection } from '../../types/music';
 import { useAudio } from '../../context/AudioContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface LibraryViewProps {
   songs: Song[];
@@ -30,6 +31,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   onSelectAlbum,
 }) => {
   const { playSong, currentSong, isPlaying, togglePlayPause } = useAudio();
+  const { isOwner } = useAuth();
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -258,17 +260,19 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                         >
                           <Download className="w-3.5 h-3.5" />
                         </button>
-                        <button
-                          onClick={() => {
-                            if (confirm(`Are you sure you want to delete "${song.title}"?`)) {
-                              onDeleteSong(song.id);
-                            }
-                          }}
-                          className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                          title="Delete Song"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {isOwner && (
+                          <button
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to delete "${song.title}"?`)) {
+                                onDeleteSong(song.id);
+                              }
+                            }}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                            title="Delete Song"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

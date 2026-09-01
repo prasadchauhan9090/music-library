@@ -1,27 +1,31 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '../types/music';
 
+const OWNER_EMAIL = 'prasadchauhan99@gmail.com';
+
 interface AuthContextType {
   user: User | null;
+  isOwner: boolean;
   loginAs: (email: string, name: string) => void;
   logout: () => void;
   storageUsedBytes: number;
   updateStorageUsed: (bytes: number) => void;
+  verifyOwnerPin: (pin: string) => boolean;
 }
 
 const DEFAULT_USER: User = {
-  id: 'user_default',
-  email: 'prasadchauhan99@gmail.com',
-  name: 'Prasad Chauhan',
+  id: 'user_prasad',
+  email: OWNER_EMAIL,
+  name: 'Prasad Chauhan (Owner)',
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
-  storageLimitBytes: 15 * 1024 * 1024 * 1024,
+  storageLimitBytes: 50 * 1024 * 1024 * 1024, // 50 GB
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('antigravity_user');
+    const saved = localStorage.getItem('maara_user');
     return saved ? JSON.parse(saved) : DEFAULT_USER;
   });
 
@@ -29,19 +33,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem('antigravity_user', JSON.stringify(user));
+      localStorage.setItem('maara_user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('antigravity_user');
+      localStorage.removeItem('maara_user');
     }
   }, [user]);
+
+  const isOwner = user?.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
 
   const loginAs = (email: string, name: string) => {
     const newUser: User = {
       id: `user_${email.replace(/[^a-zA-Z0-9]/g, '_')}`,
       email,
       name,
-      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`,
-      storageLimitBytes: 15 * 1024 * 1024 * 1024,
+      avatarUrl: email === OWNER_EMAIL 
+        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80'
+        : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`,
+      storageLimitBytes: email === OWNER_EMAIL ? 50 * 1024 * 1024 * 1024 : 5 * 1024 * 1024 * 1024,
     };
     setUser(newUser);
   };
@@ -54,8 +62,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setStorageUsedBytes(bytes);
   };
 
+  const verifyOwnerPin = (pin: string) => {
+    if (pin === '7777' || pin === '9090' || pin.toLowerCase() === 'maara') {
+      loginAs(OWNER_EMAIL, 'Prasad Chauhan (Owner)');
+      return true;
+    }
+    return false;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loginAs, logout, storageUsedBytes, updateStorageUsed }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isOwner,
+        loginAs,
+        logout,
+        storageUsedBytes,
+        updateStorageUsed,
+        verifyOwnerPin,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

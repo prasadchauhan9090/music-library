@@ -1,6 +1,7 @@
 import React from 'react';
 import { LayoutDashboard, Music2, Disc3, Mic2, UploadCloud, Sparkles, Trash2, Library } from 'lucide-react';
 import type { ViewMode } from '../../types/music';
+import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
   currentView: ViewMode;
@@ -21,6 +22,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   songCount,
   albumCount,
 }) => {
+  const { isOwner } = useAuth();
+
   const navItems = [
     { id: 'dashboard' as ViewMode, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'library' as ViewMode, label: 'Music Library', icon: Music2, count: songCount },
@@ -94,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {songCount > 0 && (
+        {isOwner && songCount > 0 && (
           <button
             onClick={onClearLibrary}
             className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
