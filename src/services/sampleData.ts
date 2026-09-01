@@ -51,7 +51,7 @@ function writeString(view: DataView, offset: number, string: string) {
 export const SAMPLE_SONGS_DATA = [
   {
     title: 'Midnight Synth Drive',
-    artist: 'Antigravity Soundworks',
+    artist: 'MaaraMusic Soundworks',
     album: 'Neon Horizons',
     genre: 'Synthwave / Electronic',
     year: 2026,
@@ -61,7 +61,7 @@ export const SAMPLE_SONGS_DATA = [
   },
   {
     title: 'Solar Eclipse Reverie',
-    artist: 'Antigravity Soundworks',
+    artist: 'MaaraMusic Soundworks',
     album: 'Neon Horizons',
     genre: 'Ambient / Chill',
     year: 2026,
@@ -81,7 +81,7 @@ export const SAMPLE_SONGS_DATA = [
   },
   {
     title: 'Deep Focus Chillbeat',
-    artist: 'Lofi Antigravity',
+    artist: 'Lofi MaaraMusic',
     album: 'Study Sessions Vol. 1',
     genre: 'Lo-Fi',
     year: 2026,

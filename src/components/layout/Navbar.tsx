@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <h1 className="text-lg font-bold text-white tracking-tight leading-none group-hover:text-purple-400 transition-colors">
-              Antigravity <span className="text-xs px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold border border-purple-500/30">MUSIC</span>
+              Maara <span className="text-xs px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold border border-purple-500/30">MUSIC</span>
             </h1>
             <p className="text-[11px] text-zinc-400 font-medium">Songs Folder → Cloud Library</p>
           </div>

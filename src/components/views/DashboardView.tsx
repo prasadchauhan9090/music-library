@@ -43,7 +43,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <span className="text-xs font-semibold px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-              ANTIGRAVITY MUSIC ENGINE
+              MAARAMUSIC ENGINE
             </span>
             <h1 className="text-2xl lg:text-3xl font-extrabold text-white mt-2 tracking-tight">
               Welcome back, {user?.name.split(' ')[0]} 👋
