@@ -49,7 +49,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               Welcome back, {user?.name.split(' ')[0]} 👋
             </h1>
             <p className="text-sm text-zinc-300 mt-1 max-w-xl">
-              Upload your laptop's local music folder to build your private online cloud library with instant metadata & persistent audio streaming.
+              Owner upload controls • Universal stream access for all listeners to play, search, and enjoy your music collection.
             </p>
           </div>
 

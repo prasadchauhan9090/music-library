@@ -13,7 +13,7 @@ import { AlbumDetailView } from './components/views/AlbumDetailView';
 import { ArtistsView } from './components/views/ArtistsView';
 
 import type { Song, Album, Artist, ViewMode } from './types/music';
-import { getSongsForUser, deleteSong as deleteSongFromDB, clearUserLibrary, getRecentlyPlayedSongs } from './services/db';
+import { getAllSongs, deleteSong as deleteSongFromDB, clearUserLibrary, getRecentlyPlayedSongs } from './services/db';
 import { loadSampleSongsForUser } from './services/sampleData';
 
 const MainAppContent: React.FC = () => {
@@ -26,23 +26,23 @@ const MainAppContent: React.FC = () => {
   const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Universal Library: load all songs for everyone to listen
   const refreshLibrary = useCallback(async () => {
-    if (!user) return;
     try {
-      const userSongs = await getSongsForUser(user.id);
-      setSongs(userSongs);
+      const allSongs = await getAllSongs();
+      setSongs(allSongs);
 
-      const recent = await getRecentlyPlayedSongs(user.id, 8);
+      const recent = await getRecentlyPlayedSongs(undefined, 8);
       setRecentlyPlayed(recent);
 
-      const totalBytes = userSongs.reduce((acc, s) => acc + s.fileSize, 0);
+      const totalBytes = allSongs.reduce((acc, s) => acc + s.fileSize, 0);
       updateStorageUsed(totalBytes);
     } catch (err) {
       console.error('Failed to load library:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [user, updateStorageUsed]);
+  }, [updateStorageUsed]);
 
   useEffect(() => {
     refreshLibrary();
@@ -120,17 +120,15 @@ const MainAppContent: React.FC = () => {
   };
 
   const handleClearLibrary = async () => {
-    if (!user) return;
-    if (confirm('Are you sure you want to clear your entire song library?')) {
-      await clearUserLibrary(user.id);
+    if (confirm('Are you sure you want to clear the entire shared song library?')) {
+      await clearUserLibrary();
       await refreshLibrary();
     }
   };
 
   const handleLoadSamples = async () => {
-    if (!user) return;
     setIsLoading(true);
-    await loadSampleSongsForUser(user.id);
+    await loadSampleSongsForUser(user?.id || 'owner');
     await refreshLibrary();
   };
 

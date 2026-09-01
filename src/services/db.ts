@@ -8,13 +8,13 @@ export interface RecentlyPlayedRecord {
   timestamp: number;
 }
 
-export class AntigravityMusicDB extends Dexie {
+export class MaaraMusicDB extends Dexie {
   songs!: Table<Song>;
   users!: Table<User>;
   recentlyPlayed!: Table<RecentlyPlayedRecord>;
 
   constructor() {
-    super('AntigravityMusicDB');
+    super('MaaraMusicDB');
     this.version(1).stores({
       songs: 'id, userId, title, artist, album, genre, year, createdAt',
       users: 'id, email',
@@ -23,17 +23,20 @@ export class AntigravityMusicDB extends Dexie {
   }
 }
 
-export const db = new AntigravityMusicDB();
+export const db = new MaaraMusicDB();
 
-// Helper database functions
-export async function getSongsForUser(userId: string): Promise<Song[]> {
-  return await db.songs.where('userId').equals(userId).reverse().sortBy('createdAt');
+// Universal Shared Library: fetch all songs for everyone to play
+export async function getAllSongs(): Promise<Song[]> {
+  return await db.songs.reverse().sortBy('createdAt');
+}
+
+// Backwards compatibility alias
+export async function getSongsForUser(_userId?: string): Promise<Song[]> {
+  return await getAllSongs();
 }
 
 export async function saveSong(song: Song): Promise<string> {
   const existing = await db.songs
-    .where('userId')
-    .equals(song.userId)
     .filter(s => s.title.toLowerCase() === song.title.toLowerCase() && s.artist.toLowerCase() === song.artist.toLowerCase())
     .first();
 
@@ -50,9 +53,9 @@ export async function deleteSong(songId: string): Promise<void> {
   await db.recentlyPlayed.where('songId').equals(songId).delete();
 }
 
-export async function clearUserLibrary(userId: string): Promise<void> {
-  await db.songs.where('userId').equals(userId).delete();
-  await db.recentlyPlayed.where('userId').equals(userId).delete();
+export async function clearUserLibrary(_userId?: string): Promise<void> {
+  await db.songs.clear();
+  await db.recentlyPlayed.clear();
 }
 
 export async function recordRecentlyPlayed(userId: string, songId: string): Promise<void> {
@@ -63,10 +66,8 @@ export async function recordRecentlyPlayed(userId: string, songId: string): Prom
   });
 }
 
-export async function getRecentlyPlayedSongs(userId: string, limit = 8): Promise<Song[]> {
+export async function getRecentlyPlayedSongs(_userId?: string, limit = 8): Promise<Song[]> {
   const records = await db.recentlyPlayed
-    .where('userId')
-    .equals(userId)
     .reverse()
     .sortBy('timestamp');
 
